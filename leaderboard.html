@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard — RealisticEditBench</title>
+    <meta name="description" content="Model rankings on RealisticEditBench under Prior-Edits-Only prompt settings.">
+    <link rel="stylesheet" href="styles.css?v=2">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body class="page-leaderboard">
+    <div class="grain" aria-hidden="true"></div>
+
+    <nav class="site-nav" id="siteNav">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-brand">
+                <span class="brand-icon">{ }</span>
+                <span class="brand-text">RealisticEditBench</span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html#motivation">Motivation</a></li>
+                <li><a href="index.html#introduction">Intro</a></li>
+                <li><a href="index.html#related-work-table">Related</a></li>
+                <li><a href="index.html#benchmark">Benchmark</a></li>
+                <li><a href="index.html#results">Results</a></li>
+                <li><a href="leaderboard.html" class="active">Leaderboard</a></li>
+                <li><a href="index.html#usage">Usage</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="page-header">
+        <div class="section-inner">
+            <span class="section-tag">Leaderboard</span>
+            <h1>Model Rankings</h1>
+            <p class="page-header-desc">
+                Prior-Edits-Only prompt, oracle-based context retrieval.
+                Best performance in <strong>bold</strong>, second-best <u>underlined</u>.
+            </p>
+        </div>
+    </header>
+
+    <main class="leaderboard-page-main">
+        <div class="section-inner">
+            <div class="leaderboard-container leaderboard-container-standalone">
+                <div class="leaderboard-header">
+                    <div class="tabs">
+                        <button class="tab-btn active" data-tab="20">20% Prior-Edits</button>
+                        <button class="tab-btn" data-tab="40">40% Prior-Edits</button>
+                        <button class="tab-btn" data-tab="60">60% Prior-Edits</button>
+                        <button class="tab-btn" data-tab="80">80% Prior-Edits</button>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Search models...">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </div>
+                    <div class="filter-box">
+                        <select id="orgFilter">
+                            <option value="all">All Organizations</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table id="leaderboardTable" class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th class="sortable" data-sort="rank">Rank <span class="sort-icon"></span></th>
+                                <th class="sortable" data-sort="model">Model <span class="sort-icon"></span></th>
+                                <th class="sortable" data-sort="resolvedRate">Resolved Rate (%) <span class="sort-icon"></span></th>
+                                <th>Organization</th>
+                                <th class="sortable" data-sort="date">Date <span class="sort-icon"></span></th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+
+                <p class="table-note">* Resolved Rate = percentage of tasks where the generated patch passes all test cases. <a href="https://github.com/Anonymity-hub/RealisticEditBench" target="_blank" rel="noopener">Submit a PR</a> to add your model.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p>RealisticEditBench · MIT License</p>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="https://github.com/Anonymity-hub/RealisticEditBench" target="_blank" rel="noopener">GitHub</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="data.js"></script>
+    <script src="leaderboard.js"></script>
+</body>
+</html>

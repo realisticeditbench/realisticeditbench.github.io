@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RealisticEditBench — Project-Level Incremental Code Editing</title>
+    <meta name="description" content="A benchmark for evaluating LLMs on real-world project-level incremental code editing tasks from GitHub pull requests.">
+    <link rel="stylesheet" href="styles.css?v=2">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="grain" aria-hidden="true"></div>
+
+    <nav class="site-nav" id="siteNav">
+        <div class="nav-inner">
+            <a href="#hero" class="nav-brand">
+                <span class="brand-icon">{ }</span>
+                <span class="brand-text">RealisticEditBench</span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#motivation">Motivation</a></li>
+                <li><a href="#introduction">Intro</a></li>
+                <li><a href="#related-work-table">Related</a></li>
+                <li><a href="#benchmark">Benchmark</a></li>
+                <li><a href="#results">Results</a></li>
+                <li><a href="leaderboard.html">Leaderboard</a></li>
+                <li><a href="#usage">Usage</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="hero" id="hero">
+        <div class="hero-mesh" aria-hidden="true"></div>
+        <div class="hero-content">
+            <p class="hero-eyebrow">ICSE 2027 · Benchmark · Code Editing</p>
+            <h1 class="hero-title">
+                RealisticEditBench:<br>
+                <span class="hero-title-accent">Towards Real-World Project-Level</span><br>
+                Incremental Code Editing Evaluation
+            </h1>
+            <p class="hero-desc">
+                A benchmark that challenges models to perform incremental code edits
+                in real project contexts — with prior edit history, codebase structure,
+                and tasks drawn from actual GitHub pull requests.
+            </p>
+            <div class="hero-actions">
+                <a href="https://github.com/Anonymity-hub/RealisticEditBench" target="_blank" rel="noopener" class="btn btn-primary">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    GitHub
+                </a>
+                <a href="leaderboard.html" class="btn btn-secondary">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                    Leaderboard
+                </a>
+                <a href="#usage" class="btn btn-ghost">Quick Start →</a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-card">
+                    <span class="stat-value">712</span>
+                    <span class="stat-label">High-quality PRs</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value">20–80%</span>
+                    <span class="stat-label">Prior-edit ratios</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value">Docker</span>
+                    <span class="stat-label">Test-based eval</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Motivation -->
+        <section class="section" id="motivation">
+            <div class="section-inner">
+                <div class="section-header">
+                    <span class="section-tag">Motivation</span>
+                    <h2>Why Incremental Code Editing?</h2>
+                </div>
+                <div class="motivation-grid">
+                    <div class="motivation-text">
+                        <p>
+                            LLMs have shown strong performance in code <em>generation</em>, but in real software
+                            development, <strong>editing existing code</strong> is far more common — roughly
+                            <strong>70%</strong> of commits involve code edits rather than writing new code from scratch.
+                        </p>
+                        <p>
+                            Real editing is <strong>incremental</strong>: developers apply a sequence of logically
+                            ordered changes, where each step builds on prior modifications. Models must predict
+                            subsequent edits from partial history, not just translate a requirement into a one-shot patch.
+                        </p>
+                    </div>
+                    <div class="gap-cards">
+                        <div class="gap-card">
+                            <h3>Requirement-based benchmarks</h3>
+                            <p>SWE-Bench, CanItEdit, etc. generate edits from textual requirements only — omitting prior edit context central to real workflows.</p>
+                        </div>
+                        <div class="gap-card">
+                            <h3>Incremental benchmarks</h3>
+                            <p>CoEdPilot, TRACE randomly sample prior hunks, breaking logical order; target edits are 2–3 lines; metrics measure text overlap, not functional correctness.</p>
+                        </div>
+                        <div class="gap-card highlight">
+                            <h3>Our goal</h3>
+                            <p>Evaluate whether models can <strong>continue real development trajectories</strong> — with sequential prior edits, project-level context, and test-based validation.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Introduction -->
+        <section class="section section-alt" id="introduction">
+            <div class="section-inner">
+                <div class="section-header">
+                    <span class="section-tag">Introduction</span>
+                    <h2>What is RealisticEditBench?</h2>
+                </div>
+                <div class="intro-grid">
+                    <div class="intro-text">
+                        <p>
+                            <strong>RealisticEditBench</strong> evaluates LLMs on incremental code editing tasks
+                            from GitHub pull requests across 12 well-maintained Python repositories.
+                            Each PR is manually decomposed into ordered sub-edits; models receive a prefix
+                            as prior-edit context and must predict the remaining edits.
+                        </p>
+                        <p>
+                            Given a <strong>codebase</strong>, optional <strong>task description</strong>,
+                            and <strong>prior edit history</strong>, the model generates a patch validated
+                            by executable test cases — complementing SWE-Bench's requirement-driven evaluation.
+                        </p>
+                    </div>
+                    <div class="intro-visual">
+                        <div class="code-flow">
+                            <div class="flow-step">
+                                <span class="flow-num">1</span>
+                                <div>
+                                    <strong>Codebase Context</strong>
+                                    <p>Project structure &amp; dependencies</p>
+                                </div>
+                            </div>
+                            <div class="flow-arrow">↓</div>
+                            <div class="flow-step">
+                                <span class="flow-num">2</span>
+                                <div>
+                                    <strong>Prior Edit History</strong>
+                                    <p>20% – 80% of sub-edits revealed</p>
+                                </div>
+                            </div>
+                            <div class="flow-arrow">↓</div>
+                            <div class="flow-step highlight">
+                                <span class="flow-num">3</span>
+                                <div>
+                                    <strong>Generate Patch</strong>
+                                    <p>Model predicts remaining edits</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="feature-bento">
+                    <article class="bento-card">
+                        <div class="bento-icon">⟳</div>
+                        <h3>Sequential Prior Edits</h3>
+                        <p>Logically ordered sub-edits from expert decomposition — not random hunk sampling.</p>
+                    </article>
+                    <article class="bento-card">
+                        <div class="bento-icon">⬡</div>
+                        <h3>Project-Level Context</h3>
+                        <p>Multi-file changes with repository structure, BM25 or oracle context retrieval.</p>
+                    </article>
+                    <article class="bento-card">
+                        <div class="bento-icon">◎</div>
+                        <h3>712 Real PRs</h3>
+                        <p>Manually verified instances from post-Dec 2024 pull requests with test coverage.</p>
+                    </article>
+                    <article class="bento-card">
+                        <div class="bento-icon">✓</div>
+                        <h3>Functional Correctness</h3>
+                        <p>Resolved Rate via Docker execution — not just BLEU or exact match.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Navigation -->
+        <section class="section" id="navigation">
+            <div class="section-inner">
+                <div class="section-header">
+                    <span class="section-tag">Quick Navigation</span>
+                    <h2>Paper &amp; Resources</h2>
+                </div>
+                <div class="nav-map">
+                    <a href="#related-work-table" class="nav-map-item">
+                        <span class="nav-map-icon">📚</span>
+                        <div><strong>Related Work</strong><p>Table I — comparison with existing editing benchmarks</p></div>
+                    </a>
+                    <a href="#benchmark" class="nav-map-item">
+                        <span class="nav-map-icon">📐</span>
+                        <div><strong>Benchmark Construction</strong><p>Data pipeline and decomposition principles</p></div>
+                    </a>
+                    <a href="#empirical-study" class="nav-map-item">
+                        <span class="nav-map-icon">🔬</span>
+                        <div><strong>Empirical Study</strong><p>LLMs, methods, and evaluation setup</p></div>
+                    </a>
+                    <a href="#results" class="nav-map-item">
+                        <span class="nav-map-icon">📊</span>
+                        <div><strong>Experimental Results</strong><p>Key findings from RQ1–RQ5</p></div>
+                    </a>
+                    <a href="leaderboard.html" class="nav-map-item">
+                        <span class="nav-map-icon">🏆</span>
+                        <div><strong>Leaderboard</strong><p>Full model rankings by prior-edit %</p></div>
+                    </a>
+                    <a href="#usage" class="nav-map-item">
+                        <span class="nav-map-icon">🚀</span>
+                        <div><strong>Quick Start</strong><p>Install, infer, and evaluate</p></div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Paper chapters + practical sections -->
+        <section class="section section-alt" id="details">
+            <div class="section-inner">
+                <div class="section-header">
+                    <span class="section-tag">Deep Dive</span>
+                    <h2>Paper &amp; Documentation</h2>
+                </div>
+
+                <!-- II. Related Work -->
+                <details class="detail-panel" id="related-work" open>
+                    <summary class="detail-summary">
+                        <span class="detail-icon">📚</span>
+                        <span class="detail-title">Related Work</span>
+                        <span class="detail-chevron"></span>
+                    </summary>
+                    <div class="detail-content">
+                        <div class="two-col-text">
+                            <div>
+                                <h3>Requirement-Based Benchmarks</h3>
+                                <p>LLMs generate modified code from requirements without prior edit history:</p>
+                                <ul>
+                                    <li><strong>SWE-Bench</strong> — issue/PR-driven bug fixing with tests</li>
+                                    <li><strong>CanItEdit, EditEval, CodeEditorBench</strong> — hand-crafted or commit-based</li>
+                                    <li><strong>NoCode-Bench, PeacExec</strong> — feature/efficiency-driven edits</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h3>Incremental Benchmarks</h3>
+                                <p>LLMs leverage historical edits, but with key limitations:</p>
+                                <ul>
+                                    <li><strong>Random prior selection</strong> — CoEdPilot, TRACE violate logical edit order</li>
+                                    <li><strong>Short targets</strong> — typically 2–3 lines per edit hunk</li>
+                                    <li><strong>Similarity metrics</strong> — exact match, BLEU; no functional validation</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <figure class="paper-figure" id="related-work-table">
+                            <figcaption>Table I: The existing code editing benchmarks.</figcaption>
+                            <a href="assets/related_work_table.png" target="_blank" rel="noopener" class="paper-figure-link" title="Open full-size table">
+                                <img
+                                    src="assets/related_work_table.png"
+                                    alt="Table I comparing requirement-based and incremental code editing benchmarks including RealisticEditBench"
+                                    loading="lazy"
+                                    width="1200"
+                                    height="680"
+                                >
+                            </a>
+                            <p class="paper-figure-note">
+                                <a href="#related-work-table">Jump to this table</a>
+                                ·
+                                <a href="assets/related_work_table.png" target="_blank" rel="noopener">Open full size</a>
+                            </p>
+                        </figure>
+                    </div>
+                </details>
+
+                <!-- III. RealisticEditBench -->
+                <details class="detail-panel" id="benchmark">
+                    <summary class="detail-summary">
+                        <span class="detail-icon">📐</span>
+                        <span class="detail-title">RealisticEditBench — Construction</span>
+                        <span class="detail-chevron"></span>
+                    </summary>
+                    <div class="detail-content">
+                        <h3>Data Collection Pipeline</h3>
+                        <div class="pipeline-steps">
+                            <div class="pipeline-step"><span class="pipeline-label">Crawl</span><p>9,384 PRs from 12 SWE-Bench repos</p></div>
+                            <div class="pipeline-arrow">→</div>
+                            <div class="pipeline-step"><span class="pipeline-label">Filter</span><p>1,908 → 1,037 via attribute &amp; execution filters</p></div>
+                            <div class="pipeline-arrow">→</div>
+                            <div class="pipeline-step"><span class="pipeline-label">Verify</span><p>712 high-quality PRs after manual review</p></div>
+                        </div>
+                        <h3>Four Decomposition Principles</h3>
+                        <div class="feature-bento">
+                            <article class="bento-card"><h3>Context Coherence</h3><p>Contiguous code regions; minimize cross-file jumps.</p></article>
+                            <article class="bento-card"><h3>Atomic Intent</h3><p>Each sub-edit = one core editing intent.</p></article>
+                            <article class="bento-card"><h3>Logical Dependency</h3><p>Subsequent edits build on earlier ones.</p></article>
+                            <article class="bento-card"><h3>Cognitive Load Stratification</h3><p>Low-load ops → prior edits; high-load reasoning → targets.</p></article>
+                        </div>
+
+                        <h3>Benchmark Statistics</h3>
+                        <div class="stats-grid">
+                            <div class="stats-card"><span class="stats-num">489 / 223</span><span class="stats-desc">Single / Multi-file</span></div>
+                            <div class="stats-card"><span class="stats-num">~5</span><span class="stats-desc">Sub-edits per PR</span></div>
+                            <div class="stats-card"><span class="stats-num">66%</span><span class="stats-desc">Bug repair tasks</span></div>
+                        </div>
+
+                        <h3>Prior-Edit Settings &amp; Metrics</h3>
+                        <div class="context-pills">
+                            <span class="pill">20% Prior-Edits</span>
+                            <span class="pill">40% Prior-Edits</span>
+                            <span class="pill">60% Prior-Edits</span>
+                            <span class="pill">80% Prior-Edits</span>
+                        </div>
+                        <ul>
+                            <li><strong>Resolved Rate (%R)</strong> — patch applies and passes all tests</li>
+                            <li><strong>Apply Rate (%A)</strong> — patch can be applied to codebase</li>
+                            <li><strong>File Hit Rate (%F)</strong> — correct files identified for modification</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <!-- IV. Empirical Study -->
+                <details class="detail-panel" id="empirical-study">
+                    <summary class="detail-summary">
+                        <span class="detail-icon">🔬</span>
+                        <span class="detail-title">Empirical Study</span>
+                        <span class="detail-chevron"></span>
+                    </summary>
+                    <div class="detail-content">
+                        <h3>Studied LLMs</h3>
+                        <div class="context-pills">
+                            <span class="pill">DeepSeek-V3.2</span>
+                            <span class="pill">Qwen3-235B-A22B</span>
+                            <span class="pill">GPT-5-Codex</span>
+                            <span class="pill">Claude-Sonnet-4.5</span>
+                            <span class="pill">Gemini-2.5-Pro</span>
+                        </div>
+
+                        <h3>Context Retrieval</h3>
+                        <ul>
+                            <li><strong>BM25</strong> — prior-edit files + top-1/3/5 retrieved files</li>
+                            <li><strong>Oracle</strong> — all ground-truth modified files (upper bound)</li>
+                        </ul>
+
+                        <h3>Advanced Methods</h3>
+                        <ul>
+                            <li><strong>SWE-Agent</strong> — adapted for incremental edit recommendation</li>
+                            <li><strong>Agentless</strong> — pipeline with prior-edit-based localization</li>
+                            <li><strong>Cursor Tab</strong> — real-time IDE completion (manual protocol)</li>
+                        </ul>
+
+                        <h3>Three Prompt Settings</h3>
+                        <div class="prompt-cards">
+                            <div class="prompt-card"><strong>Prior-Edits-Only</strong><p>Core setting — infer intent from edit history alone</p></div>
+                            <div class="prompt-card"><strong>Requirement-Only</strong><p>SWE-Bench style — PR/issue description only</p></div>
+                            <div class="prompt-card"><strong>Combined</strong><p>Both prior edits and requirements</p></div>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- V. Results -->
+                <details class="detail-panel" id="results">
+                    <summary class="detail-summary">
+                        <span class="detail-icon">📊</span>
+                        <span class="detail-title">Experimental Results</span>
+                        <span class="detail-chevron"></span>
+                    </summary>
+                    <div class="detail-content">
+                        <div class="rq-grid">
+                            <article class="rq-card">
+                                <span class="rq-label">RQ1</span>
+                                <h3>LLM Performance</h3>
+                                <p>Even with oracle context, resolved rates stay below 30%. Combined prompt outperforms single-source prompts.</p>
+                            </article>
+                            <article class="rq-card">
+                                <span class="rq-label">RQ2</span>
+                                <h3>Prior-Edit Amount</h3>
+                                <p>More history → higher resolved rate. Claude-Sonnet-4.5: 17.98% (20%) → 50.28% (80%).</p>
+                            </article>
+                            <article class="rq-card">
+                                <span class="rq-label">RQ3</span>
+                                <h3>Advanced Methods</h3>
+                                <p>SWE-Agent improves all LLMs (+7.87%–20.50%). Prior-Edits-Only is a distinct, harder capability than Requirement-Only.</p>
+                            </article>
+                            <article class="rq-card">
+                                <span class="rq-label">RQ4</span>
+                                <h3>Task Types</h3>
+                                <p>Single-file &gt; multi-file. Bug repair (43.62%) &gt; feature addition (24.48%) for SWE-Agent+Claude.</p>
+                            </article>
+                            <article class="rq-card rq-card-wide">
+                                <span class="rq-label">RQ5</span>
+                                <h3>Failure Analysis</h3>
+                                <p>Three failure modes: intent ambiguity from sparse history, mistaking edit patterns for intent, and missing repository-level propagation.</p>
+                            </article>
+                        </div>
+                        <div class="cta-box">
+                            <p>See full model rankings across all prior-edit percentages.</p>
+                            <a href="leaderboard.html" class="btn btn-primary">View Leaderboard →</a>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- VI. Implication -->
+                <details class="detail-panel" id="implication">
+                    <summary class="detail-summary">
+                        <span class="detail-icon">💡</span>
+                        <span class="detail-title">Implication</span>
+                        <span class="detail-chevron"></span>
+                    </summary>
+                    <div class="detail-content">
+                        <div class="implication-list">
+                            <div class="implication-item"><strong>Optimize Context</strong><p>Supplement edits with brief intent descriptions; richer prior-edit context helps refactoring and feature addition.</p></div>
+                            <div class="implication-item"><strong>Rational Cursor Usage</strong><p>Tab suits repetitive local edits; complex changes need capable LLMs with manual verification.</p></div>
+                            <div class="implication-item"><strong>Editing-Specific Agents</strong><p>Adapt SWE-Agent for cross-file editing, prior-edit signals, and reduce iteration steps.</p></div>
+                            <div class="implication-item"><strong>Real-Time Non-Agent Design</strong><p>Use static analysis and prompt engineering for Tab-based assistants where latency matters.</p></div>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Dataset -->
+                <details class="detail-panel" id="dataset">
+                    <summary class="detail-summary">
+                        <span class="detail-icon">📂</span>
+                        <span class="detail-title">Dataset</span>
+                        <span class="detail-chevron"></span>
+                    </summary>
+                    <div class="detail-content">
+                        <h3>Main Benchmark</h3>
+                        <p>Available at <code>crawled_data/bench/all-task-instances.jsonl</code> in the repository.</p>
+                        <h3>Inference Variants</h3>
+                        <p>Variants in <code>crawled_data/infbench/</code>: different prior-edit percentages (0.2–0.8), BM25 retrieval, with/without issue body.</p>
+                        <pre class="code-block"><code>from editbench.utils.dataset_utils import get_inf_datasets
+
+dataset = get_inf_datasets("crawled_data/bench/all-task-instances.jsonl")</code></pre>
+                    </div>
+                </details>
+
+                <!-- Evaluation -->
+                <details class="detail-panel" id="evaluation">
+                    <summary class="detail-summary">
+                        <span class="detail-icon">⚙️</span>
+                        <span class="detail-title">Evaluation Harness</span>
+                        <span class="detail-chevron"></span>
+                    </summary>
+                    <div class="detail-content">
+                        <p>Docker-based reproducible evaluation per task instance.</p>
+                        <div class="warning-box">
+                            <ul>
+                                <li>Does <strong>not</strong> support Windows</li>
+                                <li>Recommended: Ubuntu 22.04 x86_64</li>
+                                <li>Minimum: 120GB storage, 16GB RAM, 8 CPU cores</li>
+                            </ul>
+                        </div>
+                        <pre class="code-block"><code>python -m editbench.evaluation.run_evaluation run \
+    --dataset_name "all" \
+    --predictions_path 'gold' \
+    --max_workers 2 \
+    --run_id "0.2"</code></pre>
+                    </div>
+                </details>
+
+                <!-- Usage -->
+                <details class="detail-panel" id="usage">
+                    <summary class="detail-summary">
+                        <span class="detail-icon">🚀</span>
+                        <span class="detail-title">Quick Start &amp; Usage</span>
+                        <span class="detail-chevron"></span>
+                    </summary>
+                    <div class="detail-content">
+                        <pre class="code-block"><code>git clone https://github.com/Anonymity-hub/RealisticEditBench.git
+cd RealisticEditBench
+pip install -e .
+
+python -m editbench.inference.run_api \
+    --model gpt-5-codex \
+    --dataset_name all \
+    --run_id "0.2"
+
+python -m editbench.evaluation.run_evaluation run \
+    --dataset_name "all" \
+    --model gpt-5-codex \
+    --max_workers 2 \
+    --run_id "0.2"</code></pre>
+                        <div class="module-grid">
+                            <a href="https://github.com/Anonymity-hub/RealisticEditBench/tree/main/editbench/collection" target="_blank" rel="noopener" class="module-card"><strong>Collection</strong><p>GitHub PR pipeline</p></a>
+                            <a href="https://github.com/Anonymity-hub/RealisticEditBench/tree/main/editbench/editing_split" target="_blank" rel="noopener" class="module-card"><strong>Editing Split</strong><p>Validate sub-edits</p></a>
+                            <a href="https://github.com/Anonymity-hub/RealisticEditBench/tree/main/editbench/inference" target="_blank" rel="noopener" class="module-card"><strong>Inference</strong><p>Run models</p></a>
+                            <a href="https://github.com/Anonymity-hub/RealisticEditBench/tree/main/editbench/evaluation" target="_blank" rel="noopener" class="module-card"><strong>Evaluation</strong><p>Docker harness</p></a>
+                        </div>
+                    </div>
+                </details>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p>RealisticEditBench · ICSE 2027 · MIT License</p>
+            <div class="footer-links">
+                <a href="https://github.com/Anonymity-hub/RealisticEditBench" target="_blank" rel="noopener">GitHub</a>
+                <a href="leaderboard.html">Leaderboard</a>
+                <a href="#usage">Docs</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="site.js?v=2"></script>
+</body>
+</html>
