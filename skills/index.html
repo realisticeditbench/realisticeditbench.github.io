@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Skills — RealisticEditBench</title>
-    <meta name="description" content="Cursor Agent Skills for RealisticEditBench automated data creation. Coming soon.">
-    <link rel="stylesheet" href="../styles.css?v=2">
+    <meta name="description" content="Reference skills for splitting PR-level diffs into developer-like sub-edit sequences.">
+    <link rel="stylesheet" href="../styles.css?v=3">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="page-skills">
     <div class="grain" aria-hidden="true"></div>
 
     <nav class="site-nav" id="siteNav">
@@ -38,22 +38,112 @@
 
     <header class="page-header">
         <div class="section-inner">
-            <span class="section-tag">Agent Skills</span>
-            <h1>Skills</h1>
+            <span class="section-tag">Skills</span>
+            <h1>Sub-Edit Splitting</h1>
             <p class="page-header-desc">
-                Cursor Agent Skills for automated RealisticEditBench data creation will be published here.
+                Reference guides for turning PR-level <code>whole.diff</code> patches into developer-like,
+                predictable sub-edit sequences. For full source files, see the repository on GitHub.
             </p>
         </div>
     </header>
 
-    <main class="skills-placeholder-main">
+    <main class="skills-page-main">
         <div class="section-inner">
-            <div class="skills-placeholder-card">
-                <p class="skill-status">Coming Soon</p>
-                <h2>Under Construction</h2>
-                <p>Agent skills for benchmark data creation are being prepared. Check back later.</p>
-                <a href="../index.html" class="btn btn-secondary">← Back to Home</a>
+            <div class="skills-page-toolbar">
+                <a href="https://github.com/Anonymity-hub/RealisticEditBench/tree/main/skills" class="skills-github-btn" target="_blank" rel="noopener" title="Get skills on GitHub">
+                    <img src="../assets/logos/github.svg" alt="" width="22" height="22" class="skills-github-icon">
+                    <span>Get skills on GitHub</span>
+                </a>
             </div>
+
+            <div class="skills-pipeline" aria-label="Sub-edit splitting pipeline">
+                <div class="skills-pipeline-step">
+                    <span class="pipeline-label">Input</span>
+                    <code>whole.diff</code>
+                </div>
+                <span class="skills-pipeline-arrow" aria-hidden="true">→</span>
+                <div class="skills-pipeline-step">
+                    <span class="pipeline-label">Split</span>
+                    <code>1.diff … k.diff</code>
+                </div>
+                <span class="skills-pipeline-arrow" aria-hidden="true">→</span>
+                <div class="skills-pipeline-step skills-pipeline-step-accent">
+                    <span class="pipeline-label">Validate</span>
+                    <code>git apply chain</code>
+                </div>
+            </div>
+
+            <div class="skills-grid">
+                <article class="skill-card">
+                    <div class="skill-card-header">
+                        <div class="skill-badge skill-badge-principles">
+                            <span class="skill-badge-icon">◎</span>
+                            <span class="skill-badge-type">Principles</span>
+                        </div>
+                        <a href="https://github.com/Anonymity-hub/RealisticEditBench/tree/main/skills/pr-subedit-principles" class="skill-github-link" target="_blank" rel="noopener" title="pr-subedit-principles on GitHub">
+                            <img src="../assets/logos/github.svg" alt="GitHub" width="20" height="20">
+                        </a>
+                    </div>
+                    <code class="skill-id">pr-subedit-principles</code>
+                    <h3>PR Sub-Edit Splitting Principles</h3>
+                    <p class="skill-desc">
+                        Split a PR-level <code>whole.diff</code> into a developer-like, predictable, and verifiable
+                        sub-edit sequence. Treat <code>whole.diff</code> as authoritative, plan global step numbers,
+                        and choose granularity by semantic predictability — not line count.
+                    </p>
+                    <ul class="skill-highlights">
+                        <li><strong>Authoritative anchor</strong> — each file's <code>whole.diff</code> is the single source of truth</li>
+                        <li><strong>Four principles</strong> — context coherence, atomic intent, logical dependency, cognitive load</li>
+                        <li><strong>Global numbering</strong> — parallel narratives, continued patterns, definition-before-use</li>
+                        <li><strong>Anti-patterns</strong> — no import/docs-first steps, no placeholder <code>pass</code>, no oversized hunks</li>
+                    </ul>
+                    <div class="skill-tags">
+                        <span class="skill-tag">splitting rules</span>
+                        <span class="skill-tag">step numbering</span>
+                        <span class="skill-tag">checklist</span>
+                        <span class="skill-tag">reference cases</span>
+                    </div>
+                </article>
+
+                <article class="skill-card">
+                    <div class="skill-card-header">
+                        <div class="skill-badge skill-badge-workflow">
+                            <span class="skill-badge-icon">⚙</span>
+                            <span class="skill-badge-type">Workflow</span>
+                        </div>
+                        <a href="https://github.com/Anonymity-hub/RealisticEditBench/tree/main/skills/pr-subedit-workflow" class="skill-github-link" target="_blank" rel="noopener" title="pr-subedit-workflow on GitHub">
+                            <img src="../assets/logos/github.svg" alt="GitHub" width="20" height="20">
+                        </a>
+                    </div>
+                    <code class="skill-id">pr-subedit-workflow</code>
+                    <h3>PR Sub-Edit Splitting Workflow</h3>
+                    <p class="skill-desc">
+                        End-to-end workflow to convert <code>patch_histories/{instance_id}/</code> from a PR-level diff
+                        into an ordered, strictly validatable sequence. Covers <code>run_split</code>,
+                        <code>quick_diff</code>, and sub-edit validation.
+                    </p>
+                    <ol class="skill-steps">
+                        <li><span>A</span> Read global diff and plan the timeline</li>
+                        <li><span>B</span> Initialize each file from authoritative <code>whole.diff</code></li>
+                        <li><span>C</span> Iteratively split with <code>quick_diff --step_index N</code></li>
+                        <li><span>D</span> Align local numbers to global step numbers</li>
+                        <li><span>E</span> Run strict validation via <code>pr_subedit_instance.py</code></li>
+                    </ol>
+                    <div class="skill-tags">
+                        <span class="skill-tag">quick_diff</span>
+                        <span class="skill-tag">validation</span>
+                        <span class="skill-tag">patch_histories</span>
+                        <span class="skill-tag">tooling</span>
+                    </div>
+                </article>
+            </div>
+
+            <p class="skills-footnote">
+                These skills are provided as reference material for understanding our decomposition methodology.
+                The RealisticEditBench dataset itself was built through manual curation and verification.
+                Full <code>SKILL.md</code> files and examples are available on
+                <a href="https://github.com/Anonymity-hub/RealisticEditBench/tree/main/skills" target="_blank" rel="noopener">GitHub</a>.
+            </p>
         </div>
     </main>
 
@@ -63,10 +153,11 @@
             <div class="footer-links">
                 <a href="../index.html">Home</a>
                 <a href="../leaderboard.html">Leaderboard</a>
+                <a href="https://github.com/Anonymity-hub/RealisticEditBench" target="_blank" rel="noopener">GitHub</a>
             </div>
         </div>
     </footer>
 
-    <script src="../site.js?v=2"></script>
+    <script src="../site.js?v=3"></script>
 </body>
 </html>

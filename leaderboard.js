@@ -204,7 +204,7 @@ function renderTable() {
                 <td><span class="${rateClass}">${item.resolvedRate.toFixed(2)}</span></td>
                 <td>
                     <div class="org-logo">
-                        <span class="org-icon ${item.orgType}">${getOrgInitial(item.organization)}</span>
+                        <img src="assets/logos/${item.orgType}.svg" alt="" class="org-logo-img" width="22" height="22" loading="lazy">
                         <span>${escapeHtml(item.organization)}</span>
                     </div>
                 </td>
@@ -220,12 +220,6 @@ function getRankCell(rank) {
     if (rank === 2) return '<span class="rank-medal">🥈</span>' + rank;
     if (rank === 3) return '<span class="rank-medal">🥉</span>' + rank;
     return rank;
-}
-
-function getOrgInitial(org) {
-    const words = org.split(' ');
-    if (words.length > 1) return words[0][0] + words[1][0];
-    return org.substring(0, 2).toUpperCase();
 }
 
 function escapeHtml(text) {
